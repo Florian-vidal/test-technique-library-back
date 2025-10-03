@@ -15,6 +15,12 @@ const Book = mongoose.model("Book", {
   price: Number,
 });
 
+// Model Offer
+const Offer = mongoose.model("Offer", {
+  type: String,
+  value: Number,
+});
+
 // Route Test
 app.get("/", (req, res) => {
   try {
@@ -44,13 +50,39 @@ app.post("/book", async (req, res) => {
       title: req.body.title,
       price: req.body.price,
     });
-    // console.log("Livre créé");
+    console.log("Livre créé");
 
     await newBook.save();
 
     return res
       .status(201)
       .json({ message: `Livre ${newBook.title} créé !`, book: newBook });
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+});
+
+// Récupérer les offres commerciales
+app.get("/offers", async (req, res) => {
+  try {
+    const offers = await Offer.find();
+    return res.status(200).json(offers);
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+});
+
+// Créer une offre commerciale
+app.post("/offer", async (req, res) => {
+  try {
+    const newOffer = new Offer({
+      type: req.body.type,
+      value: req.body.value,
+    });
+    // console.log("L'offre a été créé !");
+
+    await newOffer.save();
+    return res.status(201).json({ newOffer });
   } catch (error) {
     return res.status(500).json(error.message);
   }
